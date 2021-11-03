@@ -18,10 +18,18 @@ public class MainMenu : MonoBehaviour
     }
 
     public void PlayButton() {
-        SceneManager.LoadScene("Bill Test Scene/Bill Test Scene");  //Currently not functioning   
+        SceneManager.LoadScene("Bill Test Scene");
+    }
+
+    public void CreditsButton() {
+        SceneManager.LoadScene("CreditsMenu");
     }
 
     public void ExitButton() {
-        Application.Quit(); //Cannot be tested in editor (???)
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #else
+        Application.Quit();
+        #endif
     }
 }

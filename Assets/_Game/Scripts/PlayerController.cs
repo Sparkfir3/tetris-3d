@@ -10,8 +10,10 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private List<GameObject> allTetriminos;
     private List<GameObject> tetriminoStash = new List<GameObject>();
 
-    private void Awake() {
+    private void Start() {
         FillNextTetriminos();
+        grid.OnPlaceTetrimino.AddListener(() => { SpawnNextTetrimino(); });
+        SpawnNextTetrimino();
     }
 
     private void Update() {
@@ -21,11 +23,15 @@ public class PlayerController : MonoBehaviour {
             grid.MoveRight();
         } else if(Input.GetButtonDown("Down")) {
             grid.MoveDown();
+        } else if(Input.GetKeyDown(KeyCode.Space)) {
+            grid.PlaceTetrimino();
         }
     }
 
     private void SpawnNextTetrimino() {
-        grid.CurrentTetrimino = nextTetriminos[0].GetComponent<Tetrimino>();
+        grid.SetNewTetrimino(nextTetriminos[0]);
+        nextTetriminos.RemoveAt(0);
+        FillNextTetriminos();
     }
 
     private void FillNextTetriminos() {
@@ -33,8 +39,11 @@ public class PlayerController : MonoBehaviour {
             tetriminoStash = new List<GameObject>(allTetriminos);
         }
 
-        // TODO - grab random from stash, spawn it and push to nextTetriminos, then delete from stash
-        throw new System.NotImplementedException();
+        // Grab random from stash, spawn it and push to nextTetriminos, then delete from stash
+        int index = Random.Range(0, tetriminoStash.Count - 1);
+        GameObject newTetrimino = Instantiate(tetriminoStash[index], new Vector3(-5, -5), Quaternion.identity);
+        nextTetriminos.Add(newTetrimino);
+        tetriminoStash.RemoveAt(index);
 
         if(nextTetriminos.Count < tetriminoQueueCount)
             FillNextTetriminos();

@@ -15,6 +15,13 @@ public class TetrisGrid : MonoBehaviour {
 
     // -------------------------------------------------------------------------------
 
+    public Tetrimino CurrentTetrimino {
+        get { return currentTetrimino; }
+        set { currentTetrimino = value; }
+    }
+
+    // -------------------------------------------------------------------------------
+
     #region Initialization
 
     private void Awake() {
@@ -54,6 +61,32 @@ public class TetrisGrid : MonoBehaviour {
     private void PlaceBlock(int x, int y, GameObject block) {
         grid[y].row[x] = block;
         block.transform.position = new Vector3(x * blockSize + blockSize / 2, y * blockSize + blockSize / 2, 0f);
+    }
+
+    #endregion
+
+    // -------------------------------------------------------------------------------
+
+    #region Tetrimino Movement
+
+    public void MoveLeft() {
+        throw new System.NotImplementedException();
+    }
+
+    public void MoveRight() {
+        throw new System.NotImplementedException();
+    }
+
+    public void MoveDown() {
+        throw new System.NotImplementedException();
+    }
+
+    /// <summary>
+    /// Whether or not the current tetrimino can be moved to the given position
+    /// </summary>
+    /// <param name="offset">Offset of where the check should occur relative to the tetrimino's current position</param>
+    private void RelativePositionOpen(Vector2 offset) {
+        throw new System.NotImplementedException();
     }
 
     #endregion

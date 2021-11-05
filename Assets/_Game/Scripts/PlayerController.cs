@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour {
 
         // Grab random from stash, spawn it and push to nextTetriminos, then delete from stash
         int index = Random.Range(0, tetriminoStash.Count - 1);
-        GameObject newTetrimino = Instantiate(tetriminoStash[index], new Vector3(-5, -5), Quaternion.identity);
+        GameObject newTetrimino = Instantiate(tetriminoStash[index], new Vector3(-20, -20), Quaternion.identity);
         nextTetriminos.Add(newTetrimino);
         tetriminoStash.RemoveAt(index);
 

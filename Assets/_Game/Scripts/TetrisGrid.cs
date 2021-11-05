@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class TetrisGrid : MonoBehaviour {
 
-    private const int GridWidth = 8, GridHeight = 10;
+    private const int GridWidth = 6, GridHeight = 10;
 
     [SerializeField] private float blockSize;
     [SerializeField] private Vector3 bottomLeft;
@@ -14,7 +14,7 @@ public class TetrisGrid : MonoBehaviour {
 
     public UnityEvent OnPlaceTetrimino;
 
-    private Row[] rows;
+    private List<Row> rows = new List<Row>();
 
     // -------------------------------------------------------------------------------
 
@@ -28,9 +28,8 @@ public class TetrisGrid : MonoBehaviour {
     #region Initialization
 
     private void Awake() {
-        rows = new Row[GridHeight];
         for(int i = 0; i < GridHeight; i++)
-            rows[i] = new Row(GridWidth);
+            rows.Add(new Row(GridWidth));
     }
 
     #endregion
@@ -56,14 +55,18 @@ public class TetrisGrid : MonoBehaviour {
             PlaceBlock(currentTetrimino.XPos[i] + (int)tetriminoPosition.x, currentTetrimino.YPos[i] + (int)tetriminoPosition.y, currentTetrimino.Blocks[i]);
         }
         Destroy(currentTetrimino.gameObject);
-        // TODO - get next
 
         // Clear rows
+        List<int> clearedRows = new List<int>();
         for(int i = 0; i < GridHeight; i++) {
             if(rows[i].IsFull()) {
                 rows[i].Destroy();
+                clearedRows.Add(i);
             }
         }
+        
+        // Shift rows down
+        ShiftRowsDown(clearedRows);
 
         // TODO - check win/lose
 
@@ -71,8 +74,41 @@ public class TetrisGrid : MonoBehaviour {
     }
 
     private void PlaceBlock(int x, int y, GameObject block) {
-        rows[y].row[x] = block;
+        if(!block)
+            return;
+
+        rows[y].blocks[x] = block;
         block.transform.localPosition = new Vector3(x * blockSize + blockSize / 2, y * blockSize + blockSize / 2, 0f);
+    }
+
+    private void ShiftRowsDown(List<int> clearedRows) {
+        if(clearedRows.Count == 0)
+            return;
+
+        // Prep
+        List<Row> toRemove = new List<Row>();
+        int min = clearedRows[0];
+        foreach(int i in clearedRows) {
+            min = i < min ? i : min;
+            toRemove.Add(rows[i]);
+        }
+
+        // Remove
+        foreach(Row r in toRemove) {
+            rows.Remove(r);
+        }
+
+        // Shift rows down
+        for(int i = min; i < rows.Count; i++) {
+            for(int j = 0; j < GridWidth; j++) {
+                PlaceBlock(j, i, rows[i].blocks[j]);
+            }
+        }
+
+        // Re-add
+        foreach(Row r in toRemove) {
+            rows.Add(r);
+        }
     }
 
     #endregion
@@ -128,7 +164,7 @@ public class TetrisGrid : MonoBehaviour {
             return false;
 
         // Block occupied
-        return rows[y].row[x] == null;
+        return rows[y].blocks[x] == null;
     }
 
     #endregion
@@ -159,14 +195,14 @@ public class TetrisGrid : MonoBehaviour {
 
 class Row {
 
-    public GameObject[] row;
+    public GameObject[] blocks;
 
     public Row(int width) {
-        row = new GameObject[width];
+        blocks = new GameObject[width];
     }
 
     public bool IsFull() {
-        foreach(GameObject obj in row) {
+        foreach(GameObject obj in blocks) {
             if(!obj)
                 return false;
         }
@@ -175,17 +211,17 @@ class Row {
 
     public override string ToString() {
         string output = "";
-        foreach(GameObject block in row) {
+        foreach(GameObject block in blocks) {
             output += block != null ? "X" : "O";
         }
         return output;
     }
 
     public void Destroy() {
-        foreach(GameObject block in row) {
+        foreach(GameObject block in blocks) {
             block.GetComponent<Block>().Destroy();
         }
-        row = new GameObject[row.Length];
+        blocks = new GameObject[blocks.Length];
     }
 
 }

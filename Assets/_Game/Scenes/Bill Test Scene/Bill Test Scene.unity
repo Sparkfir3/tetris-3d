@@ -213,6 +213,10 @@ MonoBehaviour:
   - {fileID: 9095922833741719564, guid: d8525868c431ac842a0420837c3f7cfa, type: 3}
   - {fileID: 8390938027581971239, guid: 3f90d4c6ff5e9d84e993802608dd0524, type: 3}
   - {fileID: 8350338986871850015, guid: 0073c5679422ce1478801e17f2897fe4, type: 3}
+  queuePosition: {x: 4, y: 4, z: 0}
+  queueScale: {x: 0.6, y: 0.6, z: 0.6}
+  queueOffset: 3
+  displayQueueGizmo: 0
 --- !u!4 &1432089484
 Transform:
   m_ObjectHideFlags: 0

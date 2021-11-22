@@ -36,6 +36,14 @@ public class PlayerController : MonoBehaviour {
         } else if(Input.GetKeyDown(KeyCode.Space)) {
             grid.PlaceTetrimino();
         }
+
+        else if(Input.GetKeyDown(KeyCode.E)) {
+            grid.CurrentTetrimino.RotateClockwise();
+            grid.OnRotateTetrimino.Invoke();
+        } else if(Input.GetKeyDown(KeyCode.Q)) {
+            grid.CurrentTetrimino.RotateCounterclockwise();
+            grid.OnRotateTetrimino.Invoke();
+        }
     }
 
     private void SpawnNextTetrimino() {

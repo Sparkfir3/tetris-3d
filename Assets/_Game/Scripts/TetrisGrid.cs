@@ -5,7 +5,7 @@ using UnityEngine.Events;
 
 public class TetrisGrid : MonoBehaviour {
 
-    private const int GridWidth = 6, GridHeight = 10;
+    private int GridWidth = 6, GridHeight = 10, BufferZone = 4;
 
     [SerializeField] private float blockSize;
     [SerializeField] private Vector3 bottomLeft;
@@ -13,6 +13,7 @@ public class TetrisGrid : MonoBehaviour {
     [SerializeField] private Vector2 tetriminoPosition;
 
     public UnityEvent OnPlaceTetrimino;
+    public UnityEvent OnRotateTetrimino;
 
     private List<Row> rows = new List<Row>();
 
@@ -28,8 +29,20 @@ public class TetrisGrid : MonoBehaviour {
     #region Initialization
 
     private void Awake() {
+        GridHeight += BufferZone;
+
         for(int i = 0; i < GridHeight; i++)
             rows.Add(new Row(GridWidth));
+
+        OnRotateTetrimino.AddListener(() => {
+            if(!RelativePositionOpen(Vector2.zero)) {
+                Debug.Log("aa");
+                for(int i = 1; i < currentTetrimino.Width + 1; i++) {
+                    if(MoveUp(i))
+                        return;
+                }
+            }
+        });
     }
 
     #endregion
@@ -40,8 +53,17 @@ public class TetrisGrid : MonoBehaviour {
 
     public void SetNewTetrimino(GameObject tetrimino) {
         CurrentTetrimino = tetrimino.GetComponent<Tetrimino>();
-        tetriminoPosition = new Vector2(GridWidth / 2 - 1, GridHeight - 4);
+        tetriminoPosition = new Vector2(GridWidth / 2 - 1, GridHeight - 4 - BufferZone);
         currentTetrimino.transform.parent = transform;
+
+        // Check position
+        if(!RelativePositionOpen(Vector3.zero)) {
+            for(int i = 0; i < (4 + BufferZone); i++) {
+                if(MoveUp(i)) {
+                    break;
+                }
+            }
+        }
         PositionCurrentTetrimino();
     }
 
@@ -117,28 +139,45 @@ public class TetrisGrid : MonoBehaviour {
 
     #region Tetrimino Movement
 
-    public void MoveLeft() {
-        if(RelativePositionOpen(new Vector2(-1, 0))) {
-            tetriminoPosition += new Vector2(-1, 0);
+    public bool MoveLeft(int amount = 1) {
+        if(RelativePositionOpen(new Vector2(-amount, 0))) {
+            tetriminoPosition += new Vector2(-amount, 0);
             PositionCurrentTetrimino();
+            return true;
         }
+        return false;
     }
 
-    public void MoveRight() {
-        if(RelativePositionOpen(new Vector2(1, 0))) {
-            tetriminoPosition += new Vector2(1, 0);
+    public bool MoveRight(int amount = 1) {
+        if(RelativePositionOpen(new Vector2(amount, 0))) {
+            tetriminoPosition += new Vector2(amount, 0);
             PositionCurrentTetrimino();
+            return true;
         }
+        return false;
     }
 
-    public void MoveDown() {
-        if(RelativePositionOpen(new Vector2(0, -1))) {
-            tetriminoPosition += new Vector2(0, -1);
+    public bool MoveDown(int amount = 1) {
+        if(RelativePositionOpen(new Vector2(0, -amount))) {
+            tetriminoPosition += new Vector2(0, -amount);
             PositionCurrentTetrimino();
+            return true;
         } else {
             PlaceTetrimino();
         }
+        return false;
     }
+
+    public bool MoveUp(int amount = 1) {
+        if(RelativePositionOpen(new Vector2(0, amount))) {
+            tetriminoPosition += new Vector2(0, amount);
+            PositionCurrentTetrimino();
+            return true;
+        }
+        return false;
+    }
+
+    // -------------------------------------------------
 
     private void PositionCurrentTetrimino() {
         currentTetrimino.transform.localPosition = new Vector3(tetriminoPosition.x * blockSize + blockSize / 2, tetriminoPosition.y * blockSize + blockSize / 2, 0);
@@ -178,6 +217,11 @@ public class TetrisGrid : MonoBehaviour {
         Gizmos.color = Color.black;
         Gizmos.DrawWireCube(transform.position + bottomLeft + (new Vector3(GridWidth / 2f, GridHeight / 2f, 0f) * blockSize), 
             new Vector3(GridWidth * blockSize, GridHeight * blockSize, blockSize));
+
+        if(Application.isPlaying) {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(transform.position + (new Vector3(GridWidth / 2f, GridHeight - BufferZone, 0f) * blockSize), new Vector3(GridWidth, 0.01f, 1f) * blockSize);
+        }
     }
 
     public void PrintGrid() {

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class TetrisGrid : MonoBehaviour {
 
@@ -14,6 +16,11 @@ public class TetrisGrid : MonoBehaviour {
 
     public UnityEvent OnPlaceTetrimino;
     public UnityEvent OnRotateTetrimino;
+
+    static int score;
+    Text scoreText, gameOverText;
+    Button returnButton;
+    public bool lost;
 
     private List<Row> rows = new List<Row>();
 
@@ -29,6 +36,11 @@ public class TetrisGrid : MonoBehaviour {
     #region Initialization
 
     private void Awake() {
+
+        gameOverText = GameObject.Find("GameOverText").GetComponent<Text>();
+        returnButton = GameObject.Find("ReturnButton").GetComponent<Button>();
+        gameOverText.enabled = false;
+        returnButton.gameObject.SetActive(false);
         GridHeight += BufferZone;
 
         for(int i = 0; i < GridHeight; i++)
@@ -82,6 +94,9 @@ public class TetrisGrid : MonoBehaviour {
         List<int> clearedRows = new List<int>();
         for(int i = 0; i < GridHeight; i++) {
             if(rows[i].IsFull()) {
+                scoreText = GameObject.Find("ScoreLabel").GetComponent<Text>();
+                score += 10;
+                scoreText.text = "Score: " + score;
                 rows[i].Destroy();
                 clearedRows.Add(i);
             }
@@ -91,6 +106,17 @@ public class TetrisGrid : MonoBehaviour {
         ShiftRowsDown(clearedRows);
 
         // TODO - check win/lose
+        for (int i = GridHeight - BufferZone; i < GridHeight; i++)
+        {
+            if (rows[i].ToString().Contains("X"))
+            {
+                lost = true;
+                gameOverText.enabled = true;
+                returnButton.gameObject.SetActive(true);
+                returnButton.enabled = true;
+                returnButton.interactable = true;
+            }
+        }
 
         OnPlaceTetrimino.Invoke();
     }
@@ -234,6 +260,11 @@ public class TetrisGrid : MonoBehaviour {
 
 #endif
     #endregion
+
+    public void ReturnButton()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
 
 }
 

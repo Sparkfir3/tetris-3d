@@ -203,6 +203,13 @@ public class TetrisGrid : MonoBehaviour {
         return false;
     }
 
+    public void HardDrop() {
+        for(int i = 0; i < GridHeight; i++) {
+            if(!MoveDown(1))
+                return;
+        }
+    }
+
     // -------------------------------------------------
 
     private void PositionCurrentTetrimino() {

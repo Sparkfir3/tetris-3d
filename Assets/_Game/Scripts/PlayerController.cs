@@ -32,9 +32,10 @@ public class PlayerController : MonoBehaviour {
         } else if(Input.GetButtonDown("Right")) {
             grid.MoveRight();
         } else if(Input.GetButtonDown("Down")) {
-            grid.MoveDown();
-        } else if(Input.GetKeyDown(KeyCode.Space)) {
-            grid.PlaceTetrimino();
+            if(Input.GetKey(KeyCode.LeftShift))
+                grid.HardDrop();
+            else
+                grid.MoveDown();
         }
 
         else if(Input.GetKeyDown(KeyCode.E)) {

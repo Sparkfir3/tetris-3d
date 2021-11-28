@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class TetrisGrid : MonoBehaviour {
 
-    private int GridWidth = 6, GridHeight = 10, BufferZone = 4;
+    private int GridWidth = 10, GridHeight = 20, BufferZone = 4;
 
     [SerializeField] private float blockSize;
     [SerializeField] private Vector3 bottomLeft;
@@ -17,7 +17,7 @@ public class TetrisGrid : MonoBehaviour {
     public UnityEvent OnPlaceTetrimino;
     public UnityEvent OnRotateTetrimino;
 
-    static int score;
+    public static int score;
     Text scoreText, gameOverText;
     Button returnButton;
     public bool lost;

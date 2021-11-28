@@ -24,9 +24,14 @@ public class PlayerController : MonoBehaviour {
         FillNextTetriminos();
         grid.OnPlaceTetrimino.AddListener(() => { SpawnNextTetrimino(); });
         SpawnNextTetrimino();
+
+        StartCoroutine(AutoDrop());
     }
 
     private void Update() {
+        if(grid.lost)
+            return;
+
         if(Input.GetButtonDown("Left")) {
             grid.MoveLeft();
         } else if(Input.GetButtonDown("Right")) {
@@ -46,6 +51,8 @@ public class PlayerController : MonoBehaviour {
             grid.OnRotateTetrimino.Invoke();
         }
     }
+
+    // -------------------------------------------------------------------------------
 
     private void SpawnNextTetrimino() {
         nextTetriminos[0].transform.localScale = Vector3.one;
@@ -77,6 +84,36 @@ public class PlayerController : MonoBehaviour {
             nextTetriminos[i].transform.position = nextPosition;
             nextPosition += new Vector3(0f, -queueOffset, 0f);
         }
+    }
+
+    // -------------------------------------------------------------------------------
+
+    private IEnumerator AutoDrop() {
+        while(!grid.lost) {
+            yield return new WaitForSeconds(GetLevelSpeed(TetrisGrid.score));
+            grid.MoveDown();
+        }
+    }
+
+    private float GetLevelSpeed(int score) {
+        if(score <= 50)
+            return 1.5f;
+        else if(score <= 100)
+            return 1.35f;
+        else if(score <= 150)
+            return 1.2f;
+        else if(score <= 200)
+            return 1f;
+        else if(score <= 250)
+            return 0.75f;
+        else if(score <= 300)
+            return 0.5f;
+        else if(score <= 350)
+            return 0.4f;
+        else if(score <= 400)
+            return 0.3f;
+        else
+            return 0.2f;
     }
 
     // -------------------------------------------------------------------------------

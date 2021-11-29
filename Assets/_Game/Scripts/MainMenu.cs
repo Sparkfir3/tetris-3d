@@ -20,6 +20,11 @@ public class MainMenu : MonoBehaviour
     public void PlayButton() {
         SceneManager.LoadScene("Tetris");
     }
+    
+    public void ControlsButton()
+    {
+        SceneManager.LoadScene("ControlsMenu");
+    }
 
     public void CreditsButton() {
         SceneManager.LoadScene("CreditsMenu");

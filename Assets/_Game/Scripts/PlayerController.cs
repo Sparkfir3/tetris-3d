@@ -99,21 +99,21 @@ public class PlayerController : MonoBehaviour {
         if(score <= 50)
             return 1.5f;
         else if(score <= 100)
-            return 1.35f;
+            return 1.25f;
         else if(score <= 150)
-            return 1.2f;
-        else if(score <= 200)
             return 1f;
-        else if(score <= 250)
+        else if(score <= 200)
             return 0.75f;
-        else if(score <= 300)
+        else if(score <= 250)
             return 0.5f;
+        else if(score <= 300)
+            return 0.25f;
         else if(score <= 350)
-            return 0.4f;
-        else if(score <= 400)
-            return 0.3f;
-        else
             return 0.2f;
+        else if(score <= 400)
+            return 0.15f;
+        else
+            return 0.1f;
     }
 
     // -------------------------------------------------------------------------------

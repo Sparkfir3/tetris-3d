@@ -419,7 +419,12 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'Left/Right: Move falling piece
 
-    Shift+Down: Hard drop piece'
+    Down: Drop piece faster
+
+    Shift+Down:
+    Hard drop piece
+
+    Q/E: Rotate piece clockwise/counterclockwise'
 --- !u!222 &443039767
 CanvasRenderer:
   m_ObjectHideFlags: 0

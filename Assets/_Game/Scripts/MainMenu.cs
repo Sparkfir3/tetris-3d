@@ -18,7 +18,7 @@ public class MainMenu : MonoBehaviour
     }
 
     public void PlayButton() {
-        SceneManager.LoadScene("Bill Test Scene");
+        SceneManager.LoadScene("Tetris");
     }
 
     public void CreditsButton() {

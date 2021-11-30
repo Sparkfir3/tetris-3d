@@ -16,6 +16,7 @@ public class TetrisGrid : MonoBehaviour {
 
     public UnityEvent OnPlaceTetrimino;
     public UnityEvent OnRotateTetrimino;
+    public UnityEvent OnMoveTetrimino;
 
     public static int score;
     Text scoreText, gameOverText;
@@ -23,6 +24,10 @@ public class TetrisGrid : MonoBehaviour {
     public bool lost;
 
     private List<Row> rows = new List<Row>();
+
+    [Header("Sounds")]
+    [SerializeField] private AudioSource clearRowSound;
+    [SerializeField] private AudioSource placeBlockSound, moveBlockSound;
 
     // -------------------------------------------------------------------------------
 
@@ -48,13 +53,14 @@ public class TetrisGrid : MonoBehaviour {
 
         OnRotateTetrimino.AddListener(() => {
             if(!RelativePositionOpen(Vector2.zero)) {
-                Debug.Log("aa");
+                //Debug.Log("aa");
                 for(int i = 1; i < currentTetrimino.Width + 1; i++) {
                     if(MoveUp(i))
                         return;
                 }
             }
         });
+        OnMoveTetrimino.AddListener(() => { moveBlockSound.Play(); });
     }
 
     #endregion
@@ -89,6 +95,7 @@ public class TetrisGrid : MonoBehaviour {
             PlaceBlock(currentTetrimino.XPos[i] + (int)tetriminoPosition.x, currentTetrimino.YPos[i] + (int)tetriminoPosition.y, currentTetrimino.Blocks[i]);
         }
         Destroy(currentTetrimino.gameObject);
+        placeBlockSound.Play();
 
         // Clear rows
         List<int> clearedRows = new List<int>();
@@ -104,6 +111,8 @@ public class TetrisGrid : MonoBehaviour {
         
         // Shift rows down
         ShiftRowsDown(clearedRows);
+        if(clearedRows.Count > 0)
+            clearRowSound.Play();
 
         // TODO - check win/lose
         for (int i = GridHeight - BufferZone; i < GridHeight; i++)
@@ -169,6 +178,7 @@ public class TetrisGrid : MonoBehaviour {
         if(RelativePositionOpen(new Vector2(-amount, 0))) {
             tetriminoPosition += new Vector2(-amount, 0);
             PositionCurrentTetrimino();
+            OnMoveTetrimino.Invoke();
             return true;
         }
         return false;
@@ -178,17 +188,19 @@ public class TetrisGrid : MonoBehaviour {
         if(RelativePositionOpen(new Vector2(amount, 0))) {
             tetriminoPosition += new Vector2(amount, 0);
             PositionCurrentTetrimino();
+            OnMoveTetrimino.Invoke();
             return true;
         }
         return false;
     }
 
-    public bool MoveDown(int amount = 1) {
+    public bool MoveDown(int amount = 1, bool placeOnFail = true) {
         if(RelativePositionOpen(new Vector2(0, -amount))) {
             tetriminoPosition += new Vector2(0, -amount);
             PositionCurrentTetrimino();
+            OnMoveTetrimino.Invoke();
             return true;
-        } else {
+        } else if(placeOnFail) {
             PlaceTetrimino();
         }
         return false;
@@ -198,6 +210,7 @@ public class TetrisGrid : MonoBehaviour {
         if(RelativePositionOpen(new Vector2(0, amount))) {
             tetriminoPosition += new Vector2(0, amount);
             PositionCurrentTetrimino();
+            OnMoveTetrimino.Invoke();
             return true;
         }
         return false;

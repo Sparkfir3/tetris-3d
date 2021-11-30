@@ -18,6 +18,8 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private float queueOffset;
     [SerializeField] private bool displayQueueGizmo;
 
+    private bool blockTurned = false;
+
     // -------------------------------------------------------------------------------
 
     private void Start() {
@@ -46,9 +48,11 @@ public class PlayerController : MonoBehaviour {
         else if(Input.GetKeyDown(KeyCode.E)) {
             grid.CurrentTetrimino.RotateClockwise();
             grid.OnRotateTetrimino.Invoke();
+            blockTurned = true;
         } else if(Input.GetKeyDown(KeyCode.Q)) {
             grid.CurrentTetrimino.RotateCounterclockwise();
             grid.OnRotateTetrimino.Invoke();
+            blockTurned = true;
         }
     }
 
@@ -89,9 +93,16 @@ public class PlayerController : MonoBehaviour {
     // -------------------------------------------------------------------------------
 
     private IEnumerator AutoDrop() {
+        float i, levelSpeed;
         while(!grid.lost) {
-            yield return new WaitForSeconds(GetLevelSpeed(TetrisGrid.score));
-            grid.MoveDown();
+            i = 0;
+            blockTurned = false;
+            levelSpeed = GetLevelSpeed(TetrisGrid.score);
+            while(i < levelSpeed) {
+                i += Time.deltaTime;
+                yield return null;
+            }
+            grid.MoveDown(1, !blockTurned);
         }
     }
 
